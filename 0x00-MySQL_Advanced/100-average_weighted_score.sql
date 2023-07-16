@@ -2,22 +2,16 @@
 -- Procedure ComputeAverageScoreForUser is taking 1 input:
 -- user_id, a users.id value (you can assume user_id is linked to an existing users)
 DROP PROCEDURE IF EXISTS ComputeAverageWeightedScoreForUser;
-DELIMITER $$
+DELIMITER |
 CREATE PROCEDURE ComputeAverageWeightedScoreForUser(
-  IN user_id INT
-)
+  user_id INT)
 BEGIN
-  DECLARE avg_weighted_score DECIMAL(10,2);
-  
-  -- Calculate the average weighted score for the user
-  SELECT AVG(score * weight) INTO avg_weighted_score
-  FROM scores
-  WHERE user_id = user_id;
-
-  -- Update the average weighted score for the user in the users table
-  UPDATE users
-  SET average_weighted_score = avg_weighted_score
-  WHERE id = user_id;
-  
-END$$;
-DELIMITER ;
+  DECLARE w_avg_score FLOAT;
+  SET w_avg_score = (SELECT SUM(score * weight) / SUM(weight)
+    FROM users AS U 
+    JOIN corrections as C ON U.id=C.user_id 
+    JOIN projects AS P ON C.project_id=P.id 
+    WHERE U.id=user_id);
+  UPDATE users SET average_score = w_avg_score WHERE id=user_id;
+END;
+|
