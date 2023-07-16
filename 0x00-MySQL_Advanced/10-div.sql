@@ -2,9 +2,9 @@
 -- The function SafeDiv takes 2 arguments: a, INT b, INT
 -- And returns a / b or 0 if b == 0
 CREATE FUNCTION SafeDiv(a INT, b INT)
-RETURNS INT
+RETURNS FLOAT
 BEGIN
-  DECLARE result INT;
+  DECLARE result FLOAT;
   
   IF b = 0 THEN
     SET result = 0;
